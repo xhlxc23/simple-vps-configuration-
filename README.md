@@ -70,6 +70,29 @@ echo "public key: /root/cert/v.xzhfirst.xyz/fullchain.pem"
 echo "private key: /root/cert/v.xzhfirst.xyz/privkey.pem"
 echo "======================================================="
 ```
+7. Open port permission so that your access will not be denied. Paste the following and enter in your SSH.
+```bash
+echo ">>> reading..."
+# get the port information
+PORT=$(x-ui settings | grep -Eo 'port: [0-9]+' | awk '{print $2}')
+PATH_URL=$(x-ui settings | grep 'webBasePath:' | awk '{print $2}')
+IP=$(curl -s ifconfig.me)
+
+if [ -z "$PORT" ]; then
+    echo "❌can't get the port information automatically，see it with cmd"x-ui settings""
+    exit 1
+fi
+
+echo ">>> 真实端口为: $PORT，正在放行防火墙..."
+ufw allow $PORT/tcp >/dev/null 2>&1
+ufw reload >/dev/null 2>&1
+
+echo -e "\n======================================================="
+echo "✅ port pemission is opened"
+echo "🌐 open the panel with following url in your browser："
+echo "http://$IP:$PORT$PATH_URL"
+echo "======================================================="
+```
 ## step four
 _Create a node on the panel_
 
@@ -84,7 +107,8 @@ _Create a node on the panel_
 4. In the TLS settings:
    · SNI: Enter v.domin
    · Certificate: public and private key address
-5. Click “Create” in the bottom right corner.
+5. Make sure that  XTLS flow is banned.
+6. Click “Create” in the bottom right corner.
 ## step five
 _Add a client and export_
 
